@@ -18,8 +18,8 @@
   },
   "scripts": {
     "lint": "biome check --fix src/",
-    "dev": "parcel index.html --port 1235",
-    "build": "parcel build index.html --dist-dir docs --public-url ./"
+    "dev": "parcel app/index.html --port 1235",
+    "build": "parcel build app/index.html --dist-dir docs --public-url ./"
   },
   "dependencies": {
     "box2d-wasm": "^7.0.0"
