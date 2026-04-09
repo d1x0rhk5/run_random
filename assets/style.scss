@@ -122,12 +122,19 @@ button {
 }
 
 .stage-shell {
-  position: relative;
-  height: max(1400px, 170vh);
+  position: sticky;
+  top: 0;
+  height: 100%;
   background:
     radial-gradient(circle at 50% 8%, rgba(137, 255, 189, 0.12), transparent 22%),
     radial-gradient(circle at 50% 100%, rgba(244, 213, 126, 0.12), transparent 28%),
     linear-gradient(180deg, #04140e 0%, #081b13 42%, #030d09 100%);
+}
+
+.map-scroll-rail {
+  height: 2200px;
+  pointer-events: none;
+  opacity: 0;
 }
 
 .roulette-canvas {
@@ -200,7 +207,11 @@ button {
   }
 
   .stage-shell {
-    height: max(1200px, 155vh);
+    height: 100%;
+  }
+
+  .map-scroll-rail {
+    height: 1800px;
   }
 }
 
@@ -225,7 +236,11 @@ button {
   }
 
   .stage-shell {
-    height: max(980px, 132vh);
+    height: 100%;
+  }
+
+  .map-scroll-rail {
+    height: 1400px;
   }
 
   .countdown {

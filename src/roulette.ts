@@ -383,6 +383,20 @@ export class Roulette extends EventTarget {
     this._winnerRank = rank;
   }
 
+  public setFixedCameraProgress(progress: number) {
+    if (this._config.cameraMode !== 'fixed' || !this._stage) {
+      return;
+    }
+
+    const clamped = Math.max(0, Math.min(progress, 1));
+    const minY = 15;
+    const maxY = this._stage.goalY - 15;
+    const y = minY + (maxY - minY) * clamped;
+
+    this._camera.setPosition({ x: 12.95, y }, true);
+    this._camera.lock(true);
+  }
+
   public setAutoRecording(value: boolean) {
     this._autoRecording = value;
   }

@@ -46,6 +46,7 @@ async function bootstrap() {
     panel.roulette.setAutoRecording(false);
     panel.roulette.setWinningRank(0);
     panel.roulette.setMap(POT_OF_GREED_MAP_INDEX);
+    panel.roulette.setFixedCameraProgress(0);
   });
 
   try {
@@ -124,6 +125,11 @@ function attachScrollSync() {
         return;
       }
 
+      const progress = getScrollProgress(panel.root);
+      panels.forEach((targetPanel) => {
+        targetPanel.roulette.setFixedCameraProgress(progress);
+      });
+
       isSyncingScroll = true;
       panels.forEach((otherPanel) => {
         if (otherPanel === panel) {
@@ -146,6 +152,7 @@ function prepareRound() {
   panels.forEach((panel) => {
     panel.winner = null;
     panel.root.dataset.state = 'idle';
+    panel.root.scrollTop = 0;
   });
 
   const numbersPanel = panels.find((panel) => panel.key === 'numbers');
@@ -159,6 +166,8 @@ function prepareRound() {
   humansPanel.roulette.setMarbles(humanEntries);
   numbersPanel.roulette.setWinningRank(numbersPanel.roulette.getCount() - 1);
   humansPanel.roulette.setWinningRank(humansPanel.roulette.getCount() - 1);
+  numbersPanel.roulette.setFixedCameraProgress(0);
+  humansPanel.roulette.setFixedCameraProgress(0);
 }
 
 async function runCountdown(countdown: HTMLElement) {
@@ -216,6 +225,14 @@ function wait(ms: number): Promise<void> {
   return new Promise((resolve) => {
     window.setTimeout(resolve, ms);
   });
+}
+
+function getScrollProgress(element: HTMLElement) {
+  const maxScroll = element.scrollHeight - element.clientHeight;
+  if (maxScroll <= 0) {
+    return 0;
+  }
+  return element.scrollTop / maxScroll;
 }
 
 function getElement<T extends HTMLElement>(selector: string): T {
