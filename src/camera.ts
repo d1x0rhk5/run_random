@@ -37,7 +37,9 @@ export class Camera {
 
   setPosition(v: VectorLike, force: boolean = false) {
     if (force) {
-      return (this._position = { x: v.x, y: v.y });
+      this._position = { x: v.x, y: v.y };
+      this._targetPosition = { x: v.x, y: v.y };
+      return this._position;
     }
     return (this._targetPosition = { x: v.x, y: v.y });
   }

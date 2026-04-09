@@ -19,17 +19,26 @@
     <main class="arena-grid">
       <section class="game-panel" id="numbers-panel" data-state="idle">
         <div class="stage-shell"></div>
-        <div class="map-scroll-rail" aria-hidden="true"></div>
       </section>
 
       <section class="game-panel" id="humans-panel" data-state="idle">
         <div class="stage-shell"></div>
-        <div class="map-scroll-rail" aria-hidden="true"></div>
       </section>
     </main>
+
   </div>
 
   <div id="countdown" class="countdown" hidden>3</div>
+  <section id="winner-board" class="winner-board" hidden>
+    <article class="winner-card">
+      <span class="winner-label">숫자</span>
+      <strong id="winner-number" class="winner-value">-</strong>
+    </article>
+    <article class="winner-card">
+      <span class="winner-label">당첨자</span>
+      <strong id="winner-human" class="winner-value">-</strong>
+    </article>
+  </section>
 
   <script type="module" src="../src/index.ts"></script>
 </body>

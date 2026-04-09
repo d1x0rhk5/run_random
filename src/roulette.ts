@@ -329,7 +329,7 @@ export class Roulette extends EventTarget {
 
     this.physics.createStage(this._stage);
     if (this._config.cameraMode === 'fixed') {
-      this._camera.initializePosition({ x: 12.95, y: 30 });
+      this.setFixedCameraProgress(0.5);
     } else {
       this._camera.initializePosition();
     }
@@ -350,7 +350,7 @@ export class Roulette extends EventTarget {
     if (this._config.cameraMode === 'dynamic') {
       this._camera.startFollowingMarbles();
     } else {
-      this._camera.initializePosition({ x: 12.95, y: 30 });
+      this.setFixedCameraProgress(0.5);
     }
 
     if (this._autoRecording) {
@@ -389,9 +389,18 @@ export class Roulette extends EventTarget {
     }
 
     const clamped = Math.max(0, Math.min(progress, 1));
-    const minY = 15;
-    const maxY = this._stage.goalY - 15;
-    const y = minY + (maxY - minY) * clamped;
+    const renderHeight = this._config.mount.clientHeight || this._renderer.height;
+    const viewHeight = renderHeight / initialZoom;
+    const halfViewHeight = viewHeight / 2;
+    const contentTopY = -2;
+    const contentBottomY = this._stage.goalY;
+    const minY = contentTopY + halfViewHeight;
+    const maxY = contentBottomY - halfViewHeight;
+
+    let y = (contentTopY + contentBottomY) / 2;
+    if (maxY > minY) {
+      y = minY + (maxY - minY) * clamped;
+    }
 
     this._camera.setPosition({ x: 12.95, y }, true);
     this._camera.lock(true);
@@ -464,7 +473,7 @@ export class Roulette extends EventTarget {
 
       this._camera.initializePosition({ x: centerX, y: centerY }, zoom);
     } else if (this._config.cameraMode === 'fixed') {
-      this._camera.initializePosition({ x: 12.95, y: 30 });
+      this.setFixedCameraProgress(0.5);
     } else {
       this._camera.initializePosition();
     }
@@ -502,6 +511,5 @@ export class Roulette extends EventTarget {
     const names = this._marbles.map((marble) => marble.name);
     this._stage = stages[index];
     this.setMarbles(names);
-    this._camera.initializePosition();
   }
 }

@@ -54,6 +54,7 @@ button {
   display: flex;
   justify-content: center;
   margin-bottom: 18px;
+  padding-top: 18px;
 }
 
 .primary-action {
@@ -77,6 +78,8 @@ button {
 }
 
 .arena-grid {
+  position: relative;
+  z-index: 11;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
@@ -85,15 +88,12 @@ button {
 
 .game-panel {
   position: relative;
-  height: clamp(760px, calc(100vh - 112px), 980px);
+  height: 2200px;
   border-radius: 26px;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
   background: linear-gradient(180deg, rgba(8, 28, 19, 0.96), rgba(4, 14, 10, 0.96));
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(142, 246, 189, 0.34) rgba(4, 14, 10, 0.82);
 }
 
 .game-panel::before {
@@ -122,19 +122,12 @@ button {
 }
 
 .stage-shell {
-  position: sticky;
-  top: 0;
+  position: relative;
   height: 100%;
   background:
     radial-gradient(circle at 50% 8%, rgba(137, 255, 189, 0.12), transparent 22%),
     radial-gradient(circle at 50% 100%, rgba(244, 213, 126, 0.12), transparent 28%),
     linear-gradient(180deg, #04140e 0%, #081b13 42%, #030d09 100%);
-}
-
-.map-scroll-rail {
-  height: 2200px;
-  pointer-events: none;
-  opacity: 0;
 }
 
 .roulette-canvas {
@@ -177,6 +170,58 @@ button {
   animation: countdown-beat 0.55s ease;
 }
 
+.countdown[hidden] {
+  display: none;
+}
+
+.winner-board {
+  position: fixed;
+  left: 50%;
+  top: 132px;
+  transform: translateX(-50%);
+  z-index: 21;
+  width: min(960px, calc(100vw - 36px));
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  pointer-events: none;
+}
+
+.winner-board[hidden] {
+  display: none;
+}
+
+.winner-card {
+  display: grid;
+  gap: 10px;
+  padding: 20px 24px;
+  border-radius: 22px;
+  border: 1px solid rgba(244, 213, 126, 0.34);
+  background:
+    linear-gradient(180deg, rgba(7, 27, 19, 0.92), rgba(4, 15, 10, 0.96)),
+    linear-gradient(135deg, rgba(244, 213, 126, 0.08), rgba(216, 255, 159, 0.08));
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.32),
+    0 0 28px rgba(244, 213, 126, 0.12);
+}
+
+.winner-label {
+  color: rgba(244, 213, 126, 0.8);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.winner-value {
+  color: #f8efc0;
+  font-size: clamp(34px, 5vw, 64px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  word-break: break-word;
+}
+
 @keyframes countdown-beat {
   0% {
     opacity: 0;
@@ -203,14 +248,6 @@ button {
   }
 
   .game-panel {
-    height: clamp(720px, calc(100vh - 104px), 900px);
-  }
-
-  .stage-shell {
-    height: 100%;
-  }
-
-  .map-scroll-rail {
     height: 1800px;
   }
 }
@@ -222,7 +259,7 @@ button {
 
   .control-bar {
     top: 12px;
-    margin-bottom: 12px;
+    padding-top: 12px;
   }
 
   .primary-action {
@@ -231,19 +268,23 @@ button {
   }
 
   .game-panel {
-    height: clamp(640px, 86vh, 780px);
+    height: 1600px;
     border-radius: 20px;
-  }
-
-  .stage-shell {
-    height: 100%;
-  }
-
-  .map-scroll-rail {
-    height: 1400px;
   }
 
   .countdown {
     width: min(52vw, 220px);
+  }
+
+  .winner-board {
+    width: min(calc(100vw - 24px), 960px);
+    grid-template-columns: 1fr;
+    gap: 12px;
+    top: 96px;
+  }
+
+  .winner-card {
+    padding: 16px 18px;
+    border-radius: 18px;
   }
 }

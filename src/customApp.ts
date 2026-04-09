@@ -21,7 +21,6 @@ let panels: GamePanel[] = [];
 let humanNames: string[] = [];
 let isRunning = false;
 let finishedCount = 0;
-let isSyncingScroll = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   void bootstrap();
@@ -32,13 +31,16 @@ async function bootstrap() {
 
   const startButton = getElement<HTMLButtonElement>('#btnStart');
   const countdown = getElement<HTMLElement>('#countdown');
+  const winnerBoard = getElement<HTMLElement>('#winner-board');
+  const winnerNumber = getElement<HTMLElement>('#winner-number');
+  const winnerHuman = getElement<HTMLElement>('#winner-human');
 
   countdown.hidden = true;
+  winnerBoard.hidden = true;
   startButton.disabled = true;
 
   panels = [createPanel('numbers', '#numbers-panel'), createPanel('humans', '#humans-panel')];
-  attachScrollSync();
-  attachPanelEvents(startButton);
+  attachPanelEvents(startButton, winnerBoard, winnerNumber, winnerHuman);
 
   await Promise.all(panels.map((panel) => waitForReady(panel.roulette)));
   panels.forEach((panel) => {
@@ -46,8 +48,8 @@ async function bootstrap() {
     panel.roulette.setAutoRecording(false);
     panel.roulette.setWinningRank(0);
     panel.roulette.setMap(POT_OF_GREED_MAP_INDEX);
-    panel.roulette.setFixedCameraProgress(0);
   });
+  attachViewportScroll();
 
   try {
     humanNames = await loadHumanNames();
@@ -102,7 +104,12 @@ function createPanel(key: GamePanel['key'], rootSelector: string): GamePanel {
   };
 }
 
-function attachPanelEvents(startButton: HTMLButtonElement) {
+function attachPanelEvents(
+  startButton: HTMLButtonElement,
+  winnerBoard: HTMLElement,
+  winnerNumber: HTMLElement,
+  winnerHuman: HTMLElement
+) {
   panels.forEach((panel) => {
     panel.roulette.addEventListener('goal', (event) => {
       const winner = (event as CustomEvent<GoalDetail>).detail.winner;
@@ -113,38 +120,33 @@ function attachPanelEvents(startButton: HTMLButtonElement) {
       if (finishedCount === panels.length) {
         isRunning = false;
         startButton.disabled = humanNames.length === 0;
+        winnerNumber.textContent = panels.find((candidate) => candidate.key === 'numbers')?.winner ?? '-';
+        winnerHuman.textContent = panels.find((candidate) => candidate.key === 'humans')?.winner ?? '-';
+        winnerBoard.hidden = false;
       }
     });
   });
 }
 
-function attachScrollSync() {
-  panels.forEach((panel) => {
-    panel.root.addEventListener('scroll', () => {
-      if (isSyncingScroll) {
-        return;
-      }
-
-      const progress = getScrollProgress(panel.root);
-      panels.forEach((targetPanel) => {
-        targetPanel.roulette.setFixedCameraProgress(progress);
-      });
-
-      isSyncingScroll = true;
-      panels.forEach((otherPanel) => {
-        if (otherPanel === panel) {
-          return;
-        }
-        otherPanel.root.scrollTop = panel.root.scrollTop;
-      });
-      isSyncingScroll = false;
+function attachViewportScroll() {
+  const syncViewport = () => {
+    const progress = getWindowScrollProgress();
+    panels.forEach((panel) => {
+      panel.roulette.setFixedCameraProgress(progress);
     });
+  };
+
+  window.addEventListener('scroll', syncViewport, { passive: true });
+  window.addEventListener('resize', syncViewport);
+  [0, 100, 300, 1000].forEach((delay) => {
+    window.setTimeout(syncViewport, delay);
   });
 }
 
 function prepareRound() {
   finishedCount = 0;
   isRunning = false;
+  const winnerBoard = getElement<HTMLElement>('#winner-board');
 
   const numberEntries = Array.from({ length: 51 }, (_, index) => `${index}`);
   const humanEntries = humanNames.map((name) => `${name}*${MARBLES_PER_HUMAN}`);
@@ -152,8 +154,8 @@ function prepareRound() {
   panels.forEach((panel) => {
     panel.winner = null;
     panel.root.dataset.state = 'idle';
-    panel.root.scrollTop = 0;
   });
+  winnerBoard.hidden = true;
 
   const numbersPanel = panels.find((panel) => panel.key === 'numbers');
   const humansPanel = panels.find((panel) => panel.key === 'humans');
@@ -166,8 +168,9 @@ function prepareRound() {
   humansPanel.roulette.setMarbles(humanEntries);
   numbersPanel.roulette.setWinningRank(numbersPanel.roulette.getCount() - 1);
   humansPanel.roulette.setWinningRank(humansPanel.roulette.getCount() - 1);
-  numbersPanel.roulette.setFixedCameraProgress(0);
-  humansPanel.roulette.setFixedCameraProgress(0);
+  const progress = getWindowScrollProgress();
+  numbersPanel.roulette.setFixedCameraProgress(progress);
+  humansPanel.roulette.setFixedCameraProgress(progress);
 }
 
 async function runCountdown(countdown: HTMLElement) {
@@ -227,12 +230,12 @@ function wait(ms: number): Promise<void> {
   });
 }
 
-function getScrollProgress(element: HTMLElement) {
-  const maxScroll = element.scrollHeight - element.clientHeight;
+function getWindowScrollProgress() {
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
   if (maxScroll <= 0) {
     return 0;
   }
-  return element.scrollTop / maxScroll;
+  return window.scrollY / maxScroll;
 }
 
 function getElement<T extends HTMLElement>(selector: string): T {

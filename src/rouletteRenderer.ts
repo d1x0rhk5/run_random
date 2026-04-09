@@ -84,8 +84,8 @@ export class RouletteRenderer {
 
     const resizing = (entries?: ResizeObserverEntry[]) => {
       const realSize = entries ? entries[0].contentRect : this._canvas.getBoundingClientRect();
-      const width = Math.max(realSize.width / 2, 640);
-      const height = (width / realSize.width) * realSize.height;
+      const width = Math.max(realSize.width, 640);
+      const height = Math.max(realSize.height, 900);
       this._canvas.width = width;
       this._canvas.height = height;
       this.sizeFactor = width / realSize.width;
