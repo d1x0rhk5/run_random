@@ -21,6 +21,7 @@ let panels: GamePanel[] = [];
 let humanNames: string[] = [];
 let isRunning = false;
 let finishedCount = 0;
+let isSyncingScroll = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   void bootstrap();
@@ -36,6 +37,7 @@ async function bootstrap() {
   startButton.disabled = true;
 
   panels = [createPanel('numbers', '#numbers-panel'), createPanel('humans', '#humans-panel')];
+  attachScrollSync();
   attachPanelEvents(startButton);
 
   await Promise.all(panels.map((panel) => waitForReady(panel.roulette)));
@@ -111,6 +113,25 @@ function attachPanelEvents(startButton: HTMLButtonElement) {
         isRunning = false;
         startButton.disabled = humanNames.length === 0;
       }
+    });
+  });
+}
+
+function attachScrollSync() {
+  panels.forEach((panel) => {
+    panel.root.addEventListener('scroll', () => {
+      if (isSyncingScroll) {
+        return;
+      }
+
+      isSyncingScroll = true;
+      panels.forEach((otherPanel) => {
+        if (otherPanel === panel) {
+          return;
+        }
+        otherPanel.root.scrollTop = panel.root.scrollTop;
+      });
+      isSyncingScroll = false;
     });
   });
 }

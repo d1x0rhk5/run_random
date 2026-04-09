@@ -85,12 +85,15 @@ button {
 
 .game-panel {
   position: relative;
-  min-height: max(1350px, 165vh);
+  height: clamp(760px, calc(100vh - 112px), 980px);
   border-radius: 26px;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: linear-gradient(180deg, rgba(8, 28, 19, 0.96), rgba(4, 14, 10, 0.96));
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(142, 246, 189, 0.34) rgba(4, 14, 10, 0.82);
 }
 
 .game-panel::before {
@@ -119,8 +122,8 @@ button {
 }
 
 .stage-shell {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  height: max(1400px, 170vh);
   background:
     radial-gradient(circle at 50% 8%, rgba(137, 255, 189, 0.12), transparent 22%),
     radial-gradient(circle at 50% 100%, rgba(244, 213, 126, 0.12), transparent 28%),
@@ -193,7 +196,11 @@ button {
   }
 
   .game-panel {
-    min-height: max(1100px, 150vh);
+    height: clamp(720px, calc(100vh - 104px), 900px);
+  }
+
+  .stage-shell {
+    height: max(1200px, 155vh);
   }
 }
 
@@ -213,8 +220,12 @@ button {
   }
 
   .game-panel {
-    min-height: max(900px, 130vh);
+    height: clamp(640px, 86vh, 780px);
     border-radius: 20px;
+  }
+
+  .stage-shell {
+    height: max(980px, 132vh);
   }
 
   .countdown {

@@ -328,7 +328,11 @@ export class Roulette extends EventTarget {
     }
 
     this.physics.createStage(this._stage);
-    this._camera.initializePosition();
+    if (this._config.cameraMode === 'fixed') {
+      this._camera.initializePosition({ x: 12.95, y: 30 });
+    } else {
+      this._camera.initializePosition();
+    }
   }
 
   public clearMarbles() {
@@ -346,7 +350,7 @@ export class Roulette extends EventTarget {
     if (this._config.cameraMode === 'dynamic') {
       this._camera.startFollowingMarbles();
     } else {
-      this._camera.initializePosition();
+      this._camera.initializePosition({ x: 12.95, y: 30 });
     }
 
     if (this._autoRecording) {
@@ -445,6 +449,8 @@ export class Roulette extends EventTarget {
       );
 
       this._camera.initializePosition({ x: centerX, y: centerY }, zoom);
+    } else if (this._config.cameraMode === 'fixed') {
+      this._camera.initializePosition({ x: 12.95, y: 30 });
     } else {
       this._camera.initializePosition();
     }
