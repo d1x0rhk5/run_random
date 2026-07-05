@@ -52,22 +52,134 @@ button {
   top: 18px;
   z-index: 12;
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: center;
+  gap: 12px;
   margin-bottom: 18px;
   padding-top: 18px;
 }
 
+.range-control,
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 54px;
+  padding: 6px 8px;
+  border: 1px solid rgba(142, 246, 189, 0.18);
+  border-radius: 14px;
+  background: rgba(5, 19, 13, 0.82);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(10px);
+}
+
+.control-label {
+  flex: 0 0 auto;
+  color: rgba(244, 213, 126, 0.86);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.number-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 42px;
+  min-width: 118px;
+  padding: 0 10px;
+  border: 1px solid rgba(244, 213, 126, 0.24);
+  border-radius: 12px;
+  background: rgba(3, 16, 11, 0.72);
+}
+
+.number-field span {
+  flex: 0 0 auto;
+  color: rgba(238, 247, 238, 0.68);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.number-field input {
+  width: 72px;
+  min-width: 0;
+  border: 0;
+  color: var(--text);
+  background: transparent;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: right;
+  outline: 0;
+}
+
+.number-field input:focus {
+  color: #f8efc0;
+}
+
+.number-field:focus-within {
+  border-color: rgba(244, 213, 126, 0.58);
+  box-shadow: 0 0 0 3px rgba(244, 213, 126, 0.1);
+}
+
+.number-field:has(input:disabled) {
+  opacity: 0.58;
+}
+
+.range-separator {
+  color: rgba(238, 247, 238, 0.56);
+  font-weight: 900;
+}
+
+.range-status {
+  min-width: 62px;
+  color: rgba(216, 255, 159, 0.86);
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.range-status[data-state='error'] {
+  color: #ffb3a6;
+}
+
+.speed-button {
+  height: 42px;
+  min-width: 64px;
+  border: 1px solid rgba(142, 246, 189, 0.2);
+  border-radius: 12px;
+  padding: 0 12px;
+  color: rgba(238, 247, 238, 0.82);
+  background: rgba(3, 16, 11, 0.72);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.speed-button:hover,
+.speed-button:focus-visible {
+  border-color: rgba(216, 255, 159, 0.52);
+  color: #f8efc0;
+  outline: 0;
+}
+
+.speed-button.is-active {
+  border-color: rgba(244, 213, 126, 0.68);
+  color: #10160f;
+  background: linear-gradient(135deg, #f4d57e 0%, #d8ff9f 100%);
+}
+
 .primary-action {
   width: min(320px, 100%);
+  flex: 0 1 260px;
   border: 0;
   border-radius: 18px;
   padding: 16px 20px;
   background: linear-gradient(135deg, #f4d57e 0%, #d8ff9f 100%);
   color: #10160f;
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Noto Sans KR', sans-serif;
   font-size: 22px;
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   box-shadow: 0 18px 36px rgba(212, 255, 159, 0.12);
 }
 
@@ -162,7 +274,7 @@ button {
   font-family: 'Orbitron', sans-serif;
   font-size: clamp(42px, 10vw, 96px);
   font-weight: 800;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
   color: #f4d57e;
 }
 
@@ -207,10 +319,10 @@ button {
 
 .winner-label {
   color: rgba(244, 213, 126, 0.8);
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Noto Sans KR', sans-serif;
   font-size: 15px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0;
 }
 
 .winner-value {
@@ -218,7 +330,7 @@ button {
   font-size: clamp(34px, 5vw, 64px);
   font-weight: 900;
   line-height: 1;
-  letter-spacing: -0.04em;
+  letter-spacing: 0;
   word-break: break-word;
 }
 
@@ -260,9 +372,37 @@ button {
   .control-bar {
     top: 12px;
     padding-top: 12px;
+    gap: 10px;
+  }
+
+  .range-control,
+  .speed-control {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .number-field {
+    flex: 1 1 124px;
+    min-width: 0;
+  }
+
+  .number-field input {
+    width: 100%;
+  }
+
+  .range-status {
+    flex: 0 0 100%;
+  }
+
+  .speed-button {
+    flex: 1 1 72px;
+    min-width: 0;
   }
 
   .primary-action {
+    width: 100%;
+    flex-basis: 100%;
     font-size: 18px;
     border-radius: 16px;
   }

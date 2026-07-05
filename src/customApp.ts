@@ -12,15 +12,43 @@ type GoalDetail = {
   winner: string;
 };
 
+type NumberRange = {
+  min: number;
+  max: number;
+};
+
+type NumberRangeControls = {
+  minInput: HTMLInputElement;
+  maxInput: HTMLInputElement;
+  status: HTMLElement;
+};
+
+type NumberRangeValidation =
+  | {
+      ok: true;
+      range: NumberRange;
+      count: number;
+    }
+  | {
+      ok: false;
+      message: string;
+    };
+
 const HUMAN_FILE_URL = new URL('../human.txt', import.meta.url).toString();
 const POT_OF_GREED_MAP_INDEX = 2;
 const MARBLES_PER_HUMAN = 7;
+const DEFAULT_NUMBER_RANGE: NumberRange = { min: 0, max: 50 };
+const MAX_NUMBER_ENTRIES = 500;
 const COUNTDOWN_STEPS = ['3', '2', '1', '개봉'];
 
 let panels: GamePanel[] = [];
 let humanNames: string[] = [];
 let isRunning = false;
 let finishedCount = 0;
+let numberRange = { ...DEFAULT_NUMBER_RANGE };
+let numberRangeControls: NumberRangeControls | null = null;
+let numberRangeIsValid = true;
+let currentSpeed = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
   void bootstrap();
@@ -34,6 +62,12 @@ async function bootstrap() {
   const winnerBoard = getElement<HTMLElement>('#winner-board');
   const winnerNumber = getElement<HTMLElement>('#winner-number');
   const winnerHuman = getElement<HTMLElement>('#winner-human');
+  const rangeControls: NumberRangeControls = {
+    minInput: getElement<HTMLInputElement>('#numberMin'),
+    maxInput: getElement<HTMLInputElement>('#numberMax'),
+    status: getElement<HTMLElement>('#rangeStatus'),
+  };
+  const speedButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('.speed-button[data-speed]'));
 
   countdown.hidden = true;
   winnerBoard.hidden = true;
@@ -49,6 +83,7 @@ async function bootstrap() {
     panel.roulette.setWinningRank(0);
     panel.roulette.setMap(POT_OF_GREED_MAP_INDEX);
   });
+  attachSpeedControls(speedButtons);
   attachViewportScroll();
 
   try {
@@ -59,20 +94,24 @@ async function bootstrap() {
     return;
   }
 
-  prepareRound();
-  startButton.disabled = false;
+  attachNumberRangeControls(rangeControls, startButton);
 
   startButton.addEventListener('click', async () => {
-    if (isRunning || humanNames.length === 0) {
+    if (isRunning || humanNames.length === 0 || !numberRangeIsValid) {
       return;
     }
 
+    if (!syncNumberRangeInputs(startButton, false)) {
+      return;
+    }
+
+    isRunning = true;
+    setNumberRangeControlsDisabled(true);
     prepareRound();
     startButton.disabled = true;
 
     await runCountdown(countdown);
 
-    isRunning = true;
     panels.forEach((panel) => {
       panel.root.dataset.state = 'running';
       panel.roulette.start();
@@ -119,12 +158,120 @@ function attachPanelEvents(
       finishedCount += 1;
       if (finishedCount === panels.length) {
         isRunning = false;
-        startButton.disabled = humanNames.length === 0;
+        setNumberRangeControlsDisabled(false);
+        updateStartButtonState(startButton);
         winnerNumber.textContent = panels.find((candidate) => candidate.key === 'numbers')?.winner ?? '-';
         winnerHuman.textContent = panels.find((candidate) => candidate.key === 'humans')?.winner ?? '-';
         winnerBoard.hidden = false;
       }
     });
+  });
+}
+
+function attachNumberRangeControls(controls: NumberRangeControls, startButton: HTMLButtonElement) {
+  numberRangeControls = controls;
+  const sync = () => {
+    syncNumberRangeInputs(startButton, true);
+  };
+
+  controls.minInput.addEventListener('input', sync);
+  controls.maxInput.addEventListener('input', sync);
+  sync();
+}
+
+function syncNumberRangeInputs(startButton: HTMLButtonElement, shouldPrepareRound: boolean): boolean {
+  if (!numberRangeControls) {
+    return true;
+  }
+
+  const validation = validateNumberRange(numberRangeControls);
+  numberRangeIsValid = validation.ok;
+
+  if (validation.ok) {
+    numberRange = validation.range;
+    numberRangeControls.status.textContent = `${validation.count}개`;
+    numberRangeControls.status.dataset.state = 'ok';
+
+    if (shouldPrepareRound && !isRunning && humanNames.length > 0) {
+      prepareRound();
+    }
+  } else {
+    numberRangeControls.status.textContent = validation.message;
+    numberRangeControls.status.dataset.state = 'error';
+  }
+
+  updateStartButtonState(startButton);
+  return validation.ok;
+}
+
+function validateNumberRange(controls: NumberRangeControls): NumberRangeValidation {
+  const minText = controls.minInput.value.trim();
+  const maxText = controls.maxInput.value.trim();
+
+  if (minText.length === 0 || maxText.length === 0) {
+    return { ok: false, message: '범위를 입력' };
+  }
+
+  const min = Number(minText);
+  const max = Number(maxText);
+
+  if (!Number.isSafeInteger(min) || !Number.isSafeInteger(max)) {
+    return { ok: false, message: '정수만 입력' };
+  }
+
+  if (min > max) {
+    return { ok: false, message: '시작 > 끝' };
+  }
+
+  const count = max - min + 1;
+  if (count > MAX_NUMBER_ENTRIES) {
+    return { ok: false, message: `${MAX_NUMBER_ENTRIES}개 이하` };
+  }
+
+  return {
+    ok: true,
+    range: { min, max },
+    count,
+  };
+}
+
+function updateStartButtonState(startButton: HTMLButtonElement) {
+  startButton.disabled = isRunning || humanNames.length === 0 || !numberRangeIsValid;
+}
+
+function setNumberRangeControlsDisabled(disabled: boolean) {
+  if (!numberRangeControls) {
+    return;
+  }
+
+  numberRangeControls.minInput.disabled = disabled;
+  numberRangeControls.maxInput.disabled = disabled;
+}
+
+function attachSpeedControls(buttons: HTMLButtonElement[]) {
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const speed = Number(button.dataset.speed);
+      if (![1, 2, 4].includes(speed)) {
+        return;
+      }
+      setPlaybackSpeed(speed, buttons);
+    });
+  });
+
+  setPlaybackSpeed(currentSpeed, buttons);
+}
+
+function setPlaybackSpeed(speed: number, buttons: HTMLButtonElement[]) {
+  currentSpeed = speed;
+  panels.forEach((panel) => {
+    panel.roulette.setSpeed(speed);
+  });
+
+  buttons.forEach((button) => {
+    const isActive = Number(button.dataset.speed) === speed;
+    button.classList.toggle('is-active', isActive);
+    button.setAttribute('aria-pressed', `${isActive}`);
   });
 }
 
@@ -145,10 +292,9 @@ function attachViewportScroll() {
 
 function prepareRound() {
   finishedCount = 0;
-  isRunning = false;
   const winnerBoard = getElement<HTMLElement>('#winner-board');
 
-  const numberEntries = Array.from({ length: 51 }, (_, index) => `${index}`);
+  const numberEntries = createNumberEntries(numberRange);
   const humanEntries = humanNames.map((name) => `${name}*${MARBLES_PER_HUMAN}`);
 
   panels.forEach((panel) => {
@@ -171,6 +317,10 @@ function prepareRound() {
   const progress = getWindowScrollProgress();
   numbersPanel.roulette.setFixedCameraProgress(progress);
   humansPanel.roulette.setFixedCameraProgress(progress);
+}
+
+function createNumberEntries(range: NumberRange): string[] {
+  return Array.from({ length: range.max - range.min + 1 }, (_, index) => `${range.min + index}`);
 }
 
 async function runCountdown(countdown: HTMLElement) {

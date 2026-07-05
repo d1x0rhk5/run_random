@@ -180,7 +180,7 @@ export class Marble {
 
   private _drawName(ctx: CanvasRenderingContext2D, zoom: number) {
     transformGuard(ctx, () => {
-      ctx.font = `12pt sans-serif`;
+      ctx.font = '12pt "Noto Sans KR", sans-serif';
       ctx.strokeStyle = 'black';
       ctx.lineWidth = 2;
       ctx.fillStyle = this.color;

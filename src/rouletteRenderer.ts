@@ -152,7 +152,7 @@ export class RouletteRenderer {
     this.ctx.scale(initialZoom, initialZoom);
     this.ctx.textAlign = 'left';
     this.ctx.textBaseline = 'top';
-    this.ctx.font = '0.4pt sans-serif';
+    this.ctx.font = '0.4pt "Noto Sans KR", sans-serif';
     this.ctx.lineWidth = 3 / (renderParameters.camera.zoom + initialZoom);
     renderParameters.camera.renderScene(this.ctx, () => {
       this.onBeforeEntities();
@@ -264,7 +264,7 @@ export class RouletteRenderer {
     this.ctx.fillStyle = theme.winnerText;
     this.ctx.strokeStyle = theme.winnerOutline;
 
-    this.ctx.font = 'bold 48px sans-serif';
+    this.ctx.font = 'bold 48px "Noto Sans KR", sans-serif';
     this.ctx.textAlign = 'right';
     this.ctx.lineWidth = 4;
     const textRightX = marbleCenterX - marbleSize / 2 - 20;
@@ -273,7 +273,7 @@ export class RouletteRenderer {
     }
 
     this.ctx.fillText('Winner', textRightX, this._canvas.height - 120);
-    this.ctx.font = 'bold 72px sans-serif';
+    this.ctx.font = 'bold 72px "Noto Sans KR", sans-serif';
     this.ctx.fillStyle = `hsl(${winner.hue} 100% ${theme.marbleLightness})`;
     if (theme.winnerOutline) {
       this.ctx.strokeText(winner.name, textRightX, this._canvas.height - 55);
