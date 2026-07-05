@@ -34,7 +34,7 @@ type NumberRangeValidation =
       message: string;
     };
 
-const HUMAN_FILE_URL = new URL('../human.txt', import.meta.url).toString();
+const HUMAN_FILE_URL = './human.txt';
 const POT_OF_GREED_MAP_INDEX = 2;
 const MARBLES_PER_HUMAN = 7;
 const DEFAULT_NUMBER_RANGE: NumberRange = { min: 0, max: 50 };

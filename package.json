@@ -19,7 +19,7 @@
   "scripts": {
     "lint": "biome check --fix src/",
     "dev": "parcel app/index.html --port 1235",
-    "build": "parcel build app/index.html --dist-dir docs --public-url ./"
+    "build": "parcel build app/index.html --dist-dir docs --public-url ./ --no-cache --no-source-maps && node -e \"const fs = require('fs'); for (const name of ['human.txt', 'human.76da3925.txt', 'human.84f54fbe.txt', 'human.559124ee.txt']) fs.copyFileSync('human.txt', 'docs/' + name)\""
   },
   "dependencies": {
     "box2d-wasm": "^7.0.0"
