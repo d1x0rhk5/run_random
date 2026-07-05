@@ -1,7 +1,28 @@
-<!DOCTYPE html><html lang=ko><script type=importmap>{"imports":{"2EEUB":"./waldokun.7e88dd59.png","4Z5W0":"./human.559124ee.txt","7s1Yr":"./kubin.f3647b70.png","8YRCW":"./Box2D.simd.dd31b167.wasm","MIq0h":"./Box2D.b9b16b27.wasm","bEMOV":"./Box2D.simd.e2d8611a.js","c3H15":"./kkwak.673a610d.png","cWbKY":"./ff.7fdc9e82.svg","e0nV0":"./junyoop.d27f0cbf.png","eRflN":"./Box2D.0f8ac9fb.js","kMY5r":"./chamru.d6926a56.png"}}</script><meta charset=UTF-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><title>욕망의 달리기 뽑기</title><meta name=description content="0-50 숫자와 human.txt 명단이 동시에 달리는 2중 추첨 페이지."><meta name=theme-color content=#081a13><link rel=icon type=image/png sizes=32x32 href=favicon-32x32.b3414860.png><link rel=stylesheet href=app.9aad67fa.css><body>
+<!DOCTYPE html><html lang=ko><script type=importmap>{"imports":{"2EEUB":"./waldokun.7e88dd59.png","4Z5W0":"./human.559124ee.txt","7s1Yr":"./kubin.f3647b70.png","8YRCW":"./Box2D.simd.dd31b167.wasm","MIq0h":"./Box2D.b9b16b27.wasm","bEMOV":"./Box2D.simd.e2d8611a.js","c3H15":"./kkwak.673a610d.png","cWbKY":"./ff.7fdc9e82.svg","e0nV0":"./junyoop.d27f0cbf.png","eRflN":"./Box2D.0f8ac9fb.js","kMY5r":"./chamru.d6926a56.png"}}</script><meta charset=UTF-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width, initial-scale=1.0"><title>욕망의 달리기 뽑기</title><meta name=description content="입력한 숫자 범위와 human.txt 명단이 동시에 달리는 2중 추첨 페이지."><meta name=theme-color content=#081a13><link rel=icon type=image/png sizes=32x32 href=favicon-32x32.b3414860.png><link rel=stylesheet href=app.6c62eeb0.css><body>
   <div class=app-shell>
-    <div class=control-bar>
-      <button id=btnStart class=primary-action>봉인 해제</button>
+    <div class=control-bar aria-label="추첨 설정">
+      <div class=range-control role=group aria-labelledby=range-label>
+        <span id=range-label class=control-label>숫자 범위</span>
+        <label class=number-field>
+          <span>시작</span>
+          <input id=numberMin type=number inputmode=numeric step=1 value=0 aria-label="시작 숫자">
+        </label>
+        <span class=range-separator>~</span>
+        <label class=number-field>
+          <span>끝</span>
+          <input id=numberMax type=number inputmode=numeric step=1 value=50 aria-label="끝 숫자">
+        </label>
+        <span id=rangeStatus class=range-status aria-live=polite>51개</span>
+      </div>
+
+      <button id=btnStart class=primary-action type=button>봉인 해제</button>
+
+      <div class=speed-control role=group aria-label="배속 선택">
+        <span class=control-label>배속</span>
+        <button class="is-active speed-button" type=button data-speed=1 aria-pressed=true>1배속</button>
+        <button class=speed-button type=button data-speed=2 aria-pressed=false>2배속</button>
+        <button class=speed-button type=button data-speed=4 aria-pressed=false>4배속</button>
+      </div>
     </div>
 
     <main class=arena-grid>
@@ -28,6 +49,6 @@
     </article>
   </section>
 
-  <script type=module src=app.7d2a8a69.js></script>
+  <script type=module src=app.fcfc9982.js></script>
 
 
